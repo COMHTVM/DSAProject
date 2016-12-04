@@ -1,0 +1,171 @@
+\documentclass[11pt]{article}
+
+\usepackage{fancyhdr} 
+\usepackage{lastpage}
+\usepackage{extramarks} 
+\usepackage{graphicx} 
+\usepackage{enumitem}
+\usepackage{mcode}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage[parfill]{parskip}
+\usepackage{amsmath}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in 
+
+\linespread{1} % Line spacing
+
+% Custom macros
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkClass: \hmwkTitle} % Top left header
+\chead{} % Top center header
+\rhead{\hmwkAuthorName \firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+   
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Lab 3} % Assignment title
+\newcommand{\hmwkDueDate}{12/8/2016} % Due date
+\newcommand{\hmwkClass}{ENEE 222} % Course/class
+\newcommand{\hmwkAuthorName}{} % Your name
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% \maketitle
+
+
+\section{Abstract}
+
+
+
+\section{Body}
+
+\begin{enumerate} 
+\item We begin by record the phrase 'I love Matlab':
+\begin{lstlisting} 
+fs = 10000;
+r = audiorecorder(fs,16,1); % Record at fs = 10000
+recordblocking(r, 8);
+\end{lstlisting}
+
+\item And saving the speech as a '.wav' file. Note this process is repeated for any other sound recording file used.
+\begin{lstlisting}
+audiowrite('holum.wav', r.getaudiodata, fs); % Save data as .wav
+\end{lstlisting}
+
+
+\item We used the templates provided online as a template for constructing a method of determining voiced, unvoiced, and silenced portions of a recording that used both energy levels and zero-crossings. In particular, we defined a function that took a recording, sample rate, zero-crossing threshold, energy threshold, and a silence energy threshold, that separated the given vector in three equally sized vectors containing the results.
+
+The method is documented in: 
+\begin{verbatim}
+https://www.asee.org/documents/zones/zone1/2008/student/ASEE12008_0044_paper.pdf
+\end{verbatim}
+
+\begin{lstlisting}
+function [voiced, unvoiced, silence, t] = part_3(speech, 
+		fs, zc_threshold, en_threshold, silence_en_threshold)
+% This computes voiced, unvoiced, and silence arrays passed in through the
+% Specified limits
+
+    close all;
+    clear plot;
+
+    x = 1:length(speech);
+    t = x./fs;
+
+    f_size = 128;
+    len = length(speech);
+    num_F = floor(len/(f_size));
+    beg = 1;
+    en = f_size;
+
+    for i = 1:num_F
+        speech_frame = speech(beg:en);
+
+        % Compute zero crossings and energy for the frame
+        zc = zero_crossings(speech_frame);
+        theta = sum(abs(speech_frame))/length(speech_frame);
+        energ(beg:en) = theta;
+        crossing(beg:en) = zc;
+
+        % Check for zc threshold
+        ts = zc/f_size <= zc_threshold;
+        es = theta >= en_threshold;
+        voiced_i(beg:en) = (ts && es);
+
+        % 'Silence' is low energy
+        silence_i(beg:en) = theta < silence_en_threshold;
+
+        % Check for energy threshold
+        beg = beg + f_size;
+        en = en + f_size;
+    end
+
+    [voiced, unvoiced] = split_vectors(speech, voiced_i); 
+    [silence, unvoiced] = split_vectors(unvoiced, silence_i);
+
+end
+\end{lstlisting}
+
+
+\end{enumerate}
+
+
+
+\section{Conclusion}
+
+
+
+\section{Discussion}
+
+
+
+\section{Code}
+
+\begin{itemize}
+\item Zero-crossing Function used in part 3.
+\begin{lstlisting}
+function num_crossings = zero_crossings(xx)
+% Count and return the number of 0 crossings in the vector, xx.
+
+num_crossings = 0;
+for i = 1:length(xx) - 1
+    num_crossings = num_crossings + abs(.5 * sign(xx(i)) - .5 * sign(xx(i+1)));
+end
+\end{lstlisting}
+
+\end{itemize}
+
+\end{document}
