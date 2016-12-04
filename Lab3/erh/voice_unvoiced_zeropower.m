@@ -2,8 +2,6 @@ clearvars;
 close all;
 clear plot;
 
-
-
 zc_threshold = 0.100; % zero_crossings / num_samples
 en_threshold = 0.075; % Energy threshold
 silence_en_threshold = 0.03; % Silence energy threshold
@@ -86,11 +84,12 @@ N = length(nsp);
 %     'window','FilterOrder',10,'CutoffFrequency', .1);
 
 % Passband filter centered around speech 
-[df, A] = fir1(10,[0.05 .1]);
-% 2nd low pass fir
-% df = designfilt('lowpassfir','DesignMethod','window','FilterOrder', 10,'CutoffFrequency',0.1);
+[df, A] = fir1(10,[0.05 .2]);
 
 y = filter(df, A, nsp); % Apply filter to speech
+%}
+
+%{
 figure
 plot(t,nsp,t,y,'r','linewidth',1.5);
 title('Filtered Waveforms');
@@ -99,3 +98,24 @@ legend('Original Noisy Signal','Filtered Signal');
 grid on
 axis tight
 %}
+
+% Part 9
+%
+zc_threshold = 1; % zero_crossings / num_samples
+en_threshold = 0.075; % Energy threshold
+silence_en_threshold = 0.03; % Silence energy threshold
+
+[voiced, unvoiced, silence, t] = part_3(y, fs, zc_threshold, en_threshold, silence_en_threshold);
+
+hold off;
+plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+legend('voiced', 'unvoiced', 'silence')
+xlabel('time (s)');
+ylabel('Amp');
+title('Plot of Voiced/Unvoiced/Silence for Noisy Recording');
+%}
+
+
