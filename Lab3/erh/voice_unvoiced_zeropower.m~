@@ -69,6 +69,7 @@ N = length(s_unvoiced)*2;
 X = abs(fft(s_unvoiced,N));
 X = fftshift(X);
 F = [-N/2:N/2-1]/N;
+F = F.*(fs/1000);
 plot(F,X),
 xlabel('frequency (kHz)')
 grid;
@@ -81,16 +82,10 @@ sound_file = 'noisy_speech.wav';
 [nsp, fs] = audioread(sound_file);
 N = length(nsp);
 
-% Basic low pass filter fir
-%df = designfilt('lowpassfir','DesignMethod', ...
-%     'window','FilterOrder',10,'CutoffFrequency', .1);
+% Basic low pass
+% df = designfilt('lowpassfir','FilterOrder',10,'CutoffFrequency', .1);
 
-% Passband filter centered around speech 
-[df, A] = fir1(10,[0.05 .1]);
-% 2nd low pass fir
-% df = designfilt('lowpassfir','DesignMethod','window','FilterOrder', 10,'CutoffFrequency',0.1);
-
-y = filter(df, A, nsp); % Apply filter to speech
+y = filter(df, nsp); % Apply filter to speech
 figure
 plot(t,nsp,t,y,'r','linewidth',1.5);
 title('Filtered Waveforms');

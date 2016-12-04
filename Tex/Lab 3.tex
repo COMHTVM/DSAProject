@@ -94,6 +94,89 @@ https://www.asee.org/documents/zones/zone1/2008/student/ASEE12008_0044_paper.pdf
 \end{verbatim}
 
 \begin{lstlisting}
+zc_threshold = 0.100; % zero_crossings / num_samples
+en_threshold = 0.075; % Energy threshold
+silence_en_threshold = 0.03; % Silence energy threshold
+
+sound_file = 'holum.wav';
+[speech, fs] = audioread(sound_file);
+
+% Identify voiced, unvoiced, and silence from basic recording
+[voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, 
+		en_threshold, silence_en_threshold);
+
+hold off;
+plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+legend('voiced', 'unvoiced', 'silence')
+xlabel('time (s)');
+ylabel('Amp');
+title('Plot of Voiced/Unvoiced/Silence for Standard Recording');
+\end{lstlisting}
+
+\item Adding white noise to the speech, then repeating section three:
+
+\begin{lstlisting}
+[sp, fs] = audioread('holum.wav');
+noisy = AddNoise(sp, 5);
+
+sound_file = 'noisy_speech.wav';
+[speech, fs] = audioread(sound_file);
+
+zc_threshold = 1; % zero_crossings / num_samples
+en_threshold = 0.075; % Energy threshold
+silence_en_threshold = 0.03; % Silence energy threshold
+
+[voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, 
+	en_threshold, silence_en_threshold);
+
+hold off;
+plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+legend('voiced', 'unvoiced', 'silence')
+xlabel('time (s)');
+ylabel('Amp');
+title('Plot of Voiced/Unvoiced/Silence for Noisy Recording');
+\end{lstlisting}
+
+
+\item Obtaining the spectrum of speech in short segments.
+
+
+\item Locating unvoiced segments lost in the noisy signal
+
+
+\item Labeling voiced/unvoiced segments based on spectrum
+
+
+\item Moving average filters
+
+
+\item Repeating part 3 on a filtered noise sample
+
+\end{enumerate}
+
+
+
+\section{Conclusion}
+
+
+
+\section{Discussion}
+
+
+
+\section{Code}
+
+\begin{itemize}
+
+\item Part-3 function for picking and returning voiced, unvoiced, and silenced portions of an audio sample.
+
+\begin{lstlisting}
 function [voiced, unvoiced, silence, t] = part_3(speech, 
 		fs, zc_threshold, en_threshold, silence_en_threshold)
 % This computes voiced, unvoiced, and silence arrays passed in through the
@@ -140,21 +223,6 @@ end
 \end{lstlisting}
 
 
-\end{enumerate}
-
-
-
-\section{Conclusion}
-
-
-
-\section{Discussion}
-
-
-
-\section{Code}
-
-\begin{itemize}
 \item Zero-crossing Function used in part 3.
 \begin{lstlisting}
 function num_crossings = zero_crossings(xx)
