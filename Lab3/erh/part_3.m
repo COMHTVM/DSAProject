@@ -1,4 +1,5 @@
-function [voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, en_threshold, silence_en_threshold)
+function [voiced, unvoiced, silence, t] = part_3(speech, fs, ...
+    zc_threshold, en_threshold, silence_en_threshold, f_size)
 % This computes voiced, unvoiced, and silence arrays passed in through the
 % Specified limits
     %{
@@ -6,13 +7,9 @@ function [voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, en_th
     https://www.asee.org/documents/zones/zone1/2008/student/ASEE12008_0044_paper.pdf
     %}
 
-    close all;
-    clear plot;
-
     x = 1:length(speech);
     t = x./fs;
 
-    f_size = 128;
     len = length(speech);
     num_F = floor(len/(f_size));
     beg = 1;
@@ -24,7 +21,7 @@ function [voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, en_th
         % Compute zero crossings and energy for the frame
         zc = zero_crossings(speech_frame);
         theta = sum(abs(speech_frame))/length(speech_frame);
-        energ(beg:en) = theta;
+        energy(beg:en) = theta;
         crossing(beg:en) = zc;
 
         % Check for zc threshold

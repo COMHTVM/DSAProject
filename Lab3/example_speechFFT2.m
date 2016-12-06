@@ -79,7 +79,6 @@ X = fftshift(X);
 F = [-N/2:N/2-1]/N;
 plot(F,X),
 xlabel('frequency / f s')
-grid;
 title('Approximate Spectrum of a Noisy speech frame with the FFT');
 pause
 

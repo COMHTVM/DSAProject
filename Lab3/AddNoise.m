@@ -16,4 +16,4 @@ ns = (ns - mean(ns))/std(ns);%standardizing the signal
 sc_ns = (ns*max(sp))./(max(ns)*(10^(snr/10)));
 
 %Generate Noisy speech
-nsp = [sp + sc_ns'];
+nsp = sp + sc_ns';

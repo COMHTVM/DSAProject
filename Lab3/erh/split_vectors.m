@@ -7,9 +7,9 @@ yy = values;
 
 for i=1:length(indexes)
     if indexes(i)
-        yy(i) = 0;
+        yy(i) = NaN;
     else
-        xx(i) = 0;
+        xx(i) = NaN;
     end
 end
 end
