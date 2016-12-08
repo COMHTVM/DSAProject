@@ -29,47 +29,56 @@ y3 = filter(df, A, nsp); % Apply filter to speech
 
 
 % Savitzky-Golay filtering
-% y3 = sgolayfilt(nsp, 3, 11);
+y4 = sgolayfilt(nsp, 3, 11);
 
 % Make plots of filtered signals
-%
-subplot(4,1,1);
+subplot(5,1,1);
 plot(t, nsp);
 title('Original Noisy Recording');
+grid;
 xlabel('time (s)');
 ylabel('Amp');
 
-subplot(4,1,2);
+subplot(5,1,2);
 plot(t,y1);
 title('Moving Average Filter');
+grid;
 xlabel('time (s)');
 ylabel('Amp');
 
-subplot(4,1,3);
+subplot(5,1,3);
 plot(t,y2);
 title('Basic Low Pass FIR');
+grid;
 xlabel('time (s)');
 ylabel('Amp');
 
-subplot(4,1,4);
+subplot(5,1,4);
 plot(t,y3);
 title('Basic Band Pass FIR');
+grid;
 xlabel('time (s)');
 ylabel('Amp');
-%}
 
+subplot(5,1,5);
+plot(t,y4);
+title('Savitzky-Golay');
+grid;
+xlabel('time (s)');
+ylabel('Amp');
+
+pause
 % Part 9
-%{
 
 zc_threshold = 0.100; % zero_crossings / num_samples
 en_threshold = 0.075; % Energy threshold
-silence_en_threshold = 0.03; % Silence energy threshold
-fsize = 1000;
+silence_en_threshold = 0.05; % Silence energy threshold
+fsize = 500;
 
 [voiced, unvoiced, silence, t] = part_3(nsp, fs, zc_threshold,  ...
     en_threshold, silence_en_threshold, fsize);
 
-subplot(4,1,1);plot(t, voiced, 'b');
+subplot(5,1,1);plot(t, voiced, 'b');
 hold on;
 plot(t, unvoiced, 'r');
 plot(t, silence, 'g');
@@ -81,7 +90,7 @@ ylabel('Amp');
 [voiced, unvoiced, silence, t] = part_3(y1, fs, zc_threshold,  ...
     en_threshold, silence_en_threshold, fsize);
 
-subplot(4,1,2);plot(t, voiced, 'b');
+subplot(5,1,2);plot(t, voiced, 'b');
 hold on;
 plot(t, unvoiced, 'r');
 plot(t, silence, 'g');
@@ -92,7 +101,7 @@ ylabel('Amp');
 [voiced, unvoiced, silence, t] = part_3(y2, fs, zc_threshold,  ...
     en_threshold, silence_en_threshold, fsize);
 
-subplot(4,1,3);plot(t, voiced, 'b');
+subplot(5,1,3);plot(t, voiced, 'b');
 hold on;
 plot(t, unvoiced, 'r');
 plot(t, silence, 'g');
@@ -103,10 +112,19 @@ ylabel('Amp');
 [voiced, unvoiced, silence, t] = part_3(y3, fs, zc_threshold,  ...
     en_threshold, silence_en_threshold, fsize);
 
-subplot(4,1,4);plot(t, voiced, 'b');
+subplot(5,1,4);plot(t, voiced, 'b');
 hold on;
 plot(t, unvoiced, 'r');
 plot(t, silence, 'g');
 xlabel('time (s)');
 ylabel('Amp');
-%}
+
+[voiced, unvoiced, silence, t] = part_3(y4, fs, zc_threshold,  ...
+    en_threshold, silence_en_threshold, fsize);
+
+subplot(5,1,5);plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+xlabel('time (s)');
+ylabel('Amp');

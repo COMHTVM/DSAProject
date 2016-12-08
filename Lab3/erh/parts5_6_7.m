@@ -3,57 +3,117 @@ clear;
 close all;
 clear plot;
 
-zc_threshold = 0.100; % zero_crossings / num_samples
-en_threshold = 0.075; % Energy threshold
-silence_en_threshold = 0.03; % Silence energy threshold
-fsize = 1000;
+sound_file = 'noisy_speech.wav';
+[nsp, fs] = audioread(sound_file);
 
 sound_file = 'holum.wav';
-[speech, fs] = audioread(sound_file);
+[speech, fs1] = audioread(sound_file);
 
-[voiced, unvoiced, silence, t] = part_3(speech, fs, zc_threshold, ...
-    en_threshold, silence_en_threshold, fsize);
+% Unvoiced segments determined in the previous section
+seg1 = nsp(31001:31500);
+seg2 = nsp(31501:32000);
+seg3 = nsp(32001:32500);
 
-% Part 5
-% Removes NaN from the returned vectors to get voiced, unvoiced and
-% silence in stand alone vectors
-s_voiced = voiced(~isnan(voiced));
-s_unvoiced = unvoiced(~isnan(unvoiced));
-s_silence = silence(~isnan(silence));
+seg4 = nsp(48001:48500);
+seg5 = nsp(48501:49000);
+seg6 = nsp(49001:49500);
 
-% Listen to selections if you want
-% soundsc(s_voiced, fs)
-% soundsc(s_unvoiced, fs)
-% soundsc(s_silence, fs)
+N = 1024;
 
-N=1024;
-frame_size = 1000;
+% display ffts for unvoiced segments (only doing 3, they all look basically
+% the same.
+subplot(2,1,1)
+for s=[seg1 seg2 seg3]
+    X = abs(fft(s,N));
+    X = fftshift(X);
+    F = [-N/2:N/2-1]/N;
+    plot(F,X);
+    hold on
+end
+xlabel('frequency / f s');
+legend('seg1', 'seg2', 'seg3');
+grid
+title('ffts for first segment');
 
-voiced_frame = s_voiced(1:frame_size);
-X = abs(fft(voiced_frame,N));
+subplot(2,1,2)
+for s=[seg4 seg5 seg6]
+    X = abs(fft(s,N));
+    X = fftshift(X);
+    F = [-N/2:N/2-1]/N;
+    plot(F,X);
+    hold on
+end
+xlabel('frequency / f s');
+legend('seg4', 'seg5', 'seg6');
+grid
+title('ffts for second segment');
+
+pause
+
+
+% Plot comparisons of voiced, unvoiced, and silence ffts
+hold off;
+seg = nsp(46001:46500);
+X = abs(fft(seg,N));
 X = fftshift(X);
 F = [-N/2:N/2-1]/N;
-subplot(3,1,1);
 plot(F,X);
-xlabel('frequency (kHz)')
-title('Approximate Spectrum of Voiced Speech with FFT');
+hold on
 
-
-unvoiced_frame = s_unvoiced(1:frame_size);
-X = abs(fft(unvoiced_frame,N));
+X = abs(fft(seg1,N));
 X = fftshift(X);
 F = [-N/2:N/2-1]/N;
-subplot(3,1,2);
 plot(F,X);
-xlabel('frequency (kHz)')
-title('Approximate Spectrum of Unvoiced Speech with FFT');
-
-
-silence_frame = s_silence(1:frame_size);
-X = abs(fft(silence_frame,N));
+hold on
+    
+seg = nsp(25001:25500);
+X = abs(fft(seg,N));
 X = fftshift(X);
 F = [-N/2:N/2-1]/N;
-subplot(3,1,3);
 plot(F,X);
-xlabel('frequency (kHz)')
-title('Approximate Spectrum of Unvoiced Speech with FFT');
+
+grid;
+title('Comparison of Voiced, Unvoiced, and Noise ffts');
+legend('voiced', 'unvoiced', 'noise');
+
+pause;
+
+
+% Find the 'high' coefficient indecies in the fft
+
+% Based on the above information, do something with part 7 to identify
+% voiced/etc
+%
+voiced_model = nsp(46001:46500);
+unvoiced_model = nsp(31001:31500);
+
+% regular
+[voiced, unvoiced, silence, t] = part_7(speech, fs, N, 500, ...
+    voiced_model, unvoiced_model, .4);
+subplot(2,1,1);
+plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+legend('voiced', 'unvoiced', 'silence')
+title('Identification using FFT on Standard Recording');
+ylabel('Amp');
+xlabel('time (s)');
+grid;
+hold on;
+
+% noisy
+[voiced, unvoiced, silence, t] = part_7(nsp, fs, N, 500, ...
+    voiced_model, unvoiced_model, .4);
+subplot(2,1,2);
+plot(t, voiced, 'b');
+hold on;
+plot(t, unvoiced, 'r');
+plot(t, silence, 'g');
+legend('voiced', 'unvoiced', 'silence')
+title('Identification using FFT on Standard Recording');
+ylabel('Amp');
+xlabel('time (s)');
+grid;
+hold on;
+
