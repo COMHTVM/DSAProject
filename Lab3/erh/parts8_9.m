@@ -67,6 +67,11 @@ grid;
 xlabel('time (s)');
 ylabel('Amp');
 
+% audiowrite('MAF.wav', y1, fs);
+% audiowrite('LPF.wav', y2, fs);
+% audiowrite('BPF.wav', y3, fs);
+% audiowrite('SGF.wav', y4, fs);
+
 pause
 % Part 9
 
